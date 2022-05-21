@@ -1,0 +1,30 @@
+[package]
+name = "dc-gate"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[workspace]
+members = [".", "entity", "migration"]
+
+[dependencies]
+poem = "1.2"
+poem-openapi = { version = "1.2", features = ["swagger-ui"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+tracing-subscriber = { version ="0.3.9", features = ["env-filter"] }
+serde = { version = "1", features = ["derive"] }
+dotenv = "0.15"
+entity = { path = "entity" }
+migration = { path = "migration" }
+sea-orm = { version = "^0.8.0", features = ["debug-print", "runtime-tokio-native-tls", "sqlx-postgres"] }
+ethers = { git = "https://github.com/gakonst/ethers-rs", features = ["legacy"] }
+lazy_static = "1.4"
+serde_json = "1.0"
+thiserror = "1.0"
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "server"
+path = "src/bin/server.rs"
