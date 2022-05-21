@@ -27,7 +27,6 @@ pub struct Model {
 pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {
-
     fn before_save(mut self, insert: bool) -> Result<Self, DbErr> {
         if insert {
             self.created_at = Set(chrono::Utc::now());
@@ -38,13 +37,20 @@ impl ActiveModelBehavior for ActiveModel {
 }
 
 impl Entity {
-    pub async fn save_basic_tx(from: String, to: String, value: u64, db: &DatabaseConnection) -> Result<Model, DbErr> {
+    pub async fn save_basic_tx(
+        from: String,
+        to: String,
+        value: u64,
+        db: &DatabaseConnection,
+    ) -> Result<Model, DbErr> {
         ActiveModel {
             uuid: Set(Uuid::new_v4()),
             from: Set(from),
             to: Set(to),
             value: Set(value),
             ..ActiveModelTrait::default()
-        }.insert(db).await
+        }
+        .insert(db)
+        .await
     }
 }

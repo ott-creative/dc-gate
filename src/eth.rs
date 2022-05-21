@@ -1,14 +1,14 @@
-use crate::uniform_response::{ok_resp, Result, GateError};
+use crate::uniform_response::{ok_resp, GateError, Result};
+use entity::eth_tx::Entity as EthTx;
 use ethers::{
     prelude::Middleware,
     providers::{Http, Provider},
 };
 use lazy_static::lazy_static;
 use poem::web::Data;
-use poem_openapi::{OpenApi, payload::Json};
+use poem_openapi::{payload::Json, OpenApi};
 use sea_orm::{DatabaseConnection, JsonValue};
 use serde_json::json;
-use entity::eth_tx::Entity as EthTx;
 
 lazy_static! {
     pub static ref PROVIDER: Provider<Http> = Provider::<Http>::try_from(
@@ -35,7 +35,8 @@ impl EthApi {
     async fn fill_tx(&self, db: Data<&DatabaseConnection>, req: Json<JsonValue>) -> Result {
         let value = req["value"].as_u64().ok_or(GateError::ParamValueRequired)?;
         // TODO fill tx (nonce gas),hash tx
-        let tx = EthTx::save_basic_tx(req["from"].to_string(), req["to"].to_string(), value, &db).await?;
+        let tx = EthTx::save_basic_tx(req["from"].to_string(), req["to"].to_string(), value, &db)
+            .await?;
         ok_resp(json!({
             "request_uuid": tx.uuid
         }))

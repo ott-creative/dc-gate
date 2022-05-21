@@ -1,10 +1,10 @@
-use serde_json::{json, Value};
 use poem::{error::ResponseError, http::StatusCode, Body, Response};
 use poem_openapi::{
     payload::Json,
     registry::{MetaResponses, Registry},
     ApiResponse,
 };
+use serde_json::{json, Value};
 
 #[derive(Debug, thiserror::Error)]
 pub enum GateError {
@@ -14,7 +14,7 @@ pub enum GateError {
     SeaDbError(#[from] sea_orm::DbErr),
 
     #[error("param value is required")]
-    ParamValueRequired
+    ParamValueRequired,
 }
 
 pub type Result = std::result::Result<Json<Value>, GateError>;
@@ -36,14 +36,11 @@ impl ResponseError for GateError {
 
 impl ApiResponse for GateError {
     fn meta() -> MetaResponses {
-        MetaResponses {
-            responses: vec![],
-        }
+        MetaResponses { responses: vec![] }
     }
 
     fn register(_registry: &mut Registry) {}
 }
-
 
 pub fn ok_resp(data: Value) -> Result {
     Ok(Json(json!({
